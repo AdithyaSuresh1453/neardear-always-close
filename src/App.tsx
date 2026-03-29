@@ -27,6 +27,7 @@ const App = () => (
           <Route path="/phone-recovery" element={<PhoneRecovery />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/home-map" element={<HomeRouteMapping />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
