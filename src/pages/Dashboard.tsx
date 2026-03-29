@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Key, Wallet, CreditCard, Smartphone, Plus, MapPin,
-  Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle
+  Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle,
+  Navigation, Shield, Phone
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import VoiceButton from "@/components/VoiceButton";
@@ -179,6 +180,24 @@ const Dashboard = () => {
                 <div className="flex justify-center">
                   <VoiceButton onResult={(t) => toast.success(`Found: Living Room - Shelf 2`)} />
                 </div>
+              </div>
+            </AnimatedSection>
+
+            {/* Quick Nav */}
+            <AnimatedSection delay={650}>
+              <div className="grid grid-cols-3 gap-3">
+                <Link to="/phone-recovery" className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-colors group">
+                  <Phone className="w-5 h-5 text-primary mx-auto mb-2" />
+                  <p className="text-xs font-medium">Phone Recovery</p>
+                </Link>
+                <Link to="/home-map" className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-colors group">
+                  <Navigation className="w-5 h-5 text-accent mx-auto mb-2" />
+                  <p className="text-xs font-medium">Home Map</p>
+                </Link>
+                <Link to="/admin" className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-colors group">
+                  <Shield className="w-5 h-5 text-success mx-auto mb-2" />
+                  <p className="text-xs font-medium">Admin Panel</p>
+                </Link>
               </div>
             </AnimatedSection>
           </div>

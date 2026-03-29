@@ -6,6 +6,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import PhoneRecovery from "./pages/PhoneRecovery";
+import AdminPanel from "./pages/AdminPanel";
+import HomeRouteMapping from "./pages/HomeRouteMapping";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +23,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/phone-recovery" element={<PhoneRecovery />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/home-map" element={<HomeRouteMapping />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
