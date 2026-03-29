@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Key, Wallet, CreditCard, Smartphone, Plus, MapPin,
-  Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle
+  Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle,
+  Navigation, Shield, Phone
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
 import VoiceButton from "@/components/VoiceButton";
 import AnimatedSection from "@/components/AnimatedSection";
