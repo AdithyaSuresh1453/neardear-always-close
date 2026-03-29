@@ -23,6 +23,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/phone-recovery" element={<PhoneRecovery />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/home-map" element={<HomeRouteMapping />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
