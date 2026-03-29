@@ -5,7 +5,6 @@ import {
   Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle,
   Navigation, Shield, Phone
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import Logo from "@/components/Logo";
 import VoiceButton from "@/components/VoiceButton";
 import AnimatedSection from "@/components/AnimatedSection";
