@@ -1,14 +1,13 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Home, Plus, Trash2, Navigation, MapPin,
-  Square, Edit3, Save, Layers, Move
+  ArrowLeft, Home, Plus, Navigation, MapPin,
+  Square, Save, Layers, Move
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 interface Room {
@@ -72,17 +71,19 @@ const initialObjects: ObjectMarker[] = [
 
 type Tool = "select" | "room" | "shelf" | "navigate";
 
+let shelfCounter = 7;
+
 const HomeRouteMapping = () => {
   const [rooms, setRooms] = useState(initialRooms);
   const [objects] = useState(initialObjects);
   const [activeTool, setActiveTool] = useState<Tool>("select");
   const [selectedObject, setSelectedObject] = useState<ObjectMarker | null>(null);
   const [navPath, setNavPath] = useState<{ x: number; y: number }[] | null>(null);
+  const [dragging, setDragging] = useState<{ roomId: string; offsetX: number; offsetY: number } | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const navigateToObject = (obj: ObjectMarker) => {
     setSelectedObject(obj);
-    // Simulate a path from entrance to object
     const entrance = { x: 10, y: 180 };
     const target = { x: obj.x, y: obj.y };
     const mid1 = { x: entrance.x + 30, y: entrance.y };
@@ -96,10 +97,80 @@ const HomeRouteMapping = () => {
     return points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
   };
 
+  const getCanvasCoords = useCallback((e: React.MouseEvent) => {
+    if (!canvasRef.current) return { x: 0, y: 0 };
+    const rect = canvasRef.current.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }, []);
+
+  // Room dragging
+  const handleRoomMouseDown = useCallback((e: React.MouseEvent, roomId: string) => {
+    if (activeTool !== "select") return;
+    e.stopPropagation();
+    const room = rooms.find((r) => r.id === roomId);
+    if (!room) return;
+    const coords = getCanvasCoords(e);
+    setDragging({ roomId, offsetX: coords.x - room.x, offsetY: coords.y - room.y });
+  }, [activeTool, rooms, getCanvasCoords]);
+
+  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!dragging) return;
+    const coords = getCanvasCoords(e);
+    setRooms((prev) =>
+      prev.map((r) =>
+        r.id === dragging.roomId
+          ? { ...r, x: Math.max(0, coords.x - dragging.offsetX), y: Math.max(0, coords.y - dragging.offsetY) }
+          : r
+      )
+    );
+  }, [dragging, getCanvasCoords]);
+
+  const handleCanvasMouseUp = useCallback(() => {
+    setDragging(null);
+  }, []);
+
+  // Click to place shelf
+  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
+    if (activeTool !== "shelf") return;
+    const coords = getCanvasCoords(e);
+    // Find which room was clicked
+    const targetRoom = rooms.find(
+      (r) => coords.x >= r.x && coords.x <= r.x + r.width && coords.y >= r.y && coords.y <= r.y + r.height
+    );
+    if (!targetRoom) {
+      toast.error("Click inside a room to place a shelf");
+      return;
+    }
+    const newShelf: Shelf = {
+      id: `s${shelfCounter++}`,
+      label: `Shelf ${shelfCounter}`,
+      x: coords.x,
+      y: coords.y,
+    };
+    setRooms((prev) =>
+      prev.map((r) =>
+        r.id === targetRoom.id ? { ...r, shelves: [...r.shelves, newShelf] } : r
+      )
+    );
+    toast.success(`Shelf placed in ${targetRoom.name}`);
+  }, [activeTool, rooms, getCanvasCoords]);
+
+  // Click to add a new room
+  const addNewRoom = () => {
+    const id = `r${Date.now()}`;
+    const colorIdx = rooms.length % roomColors.length;
+    setRooms((prev) => [
+      ...prev,
+      { id, name: `Room ${rooms.length + 1}`, x: 50, y: 50, width: 160, height: 120, color: roomColors[colorIdx], shelves: [] },
+    ]);
+    setActiveTool("select");
+    toast.success("New room added — drag to reposition");
+  };
+
   const tools: { key: Tool; icon: typeof Move; label: string }[] = [
-    { key: "select", icon: Move, label: "Select" },
+    { key: "select", icon: Move, label: "Select & Drag" },
     { key: "room", icon: Square, label: "Add Room" },
-    { key: "shelf", icon: Layers, label: "Add Shelf" },
+    { key: "shelf", icon: Layers, label: "Place Shelf" },
     { key: "navigate", icon: Navigation, label: "Navigate" },
   ];
 
@@ -125,6 +196,7 @@ const HomeRouteMapping = () => {
               <button
                 key={t.key}
                 onClick={() => {
+                  if (t.key === "room") { addNewRoom(); return; }
                   setActiveTool(t.key);
                   if (t.key !== "navigate") { setNavPath(null); setSelectedObject(null); }
                 }}
@@ -142,6 +214,12 @@ const HomeRouteMapping = () => {
               <Save className="w-4 h-4" /> Save Layout
             </Button>
           </div>
+          {activeTool === "shelf" && (
+            <p className="text-xs text-muted-foreground mt-2 ml-1">Click inside any room to place a shelf marker</p>
+          )}
+          {activeTool === "select" && (
+            <p className="text-xs text-muted-foreground mt-2 ml-1">Drag rooms to reposition them on the floor plan</p>
+          )}
         </AnimatedSection>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -156,8 +234,14 @@ const HomeRouteMapping = () => {
               <CardContent>
                 <div
                   ref={canvasRef}
-                  className="relative w-full bg-secondary/30 rounded-xl overflow-hidden border border-border"
+                  className={`relative w-full bg-secondary/30 rounded-xl overflow-hidden border border-border select-none ${
+                    activeTool === "shelf" ? "cursor-crosshair" : activeTool === "select" ? "cursor-default" : ""
+                  }`}
                   style={{ height: 380 }}
+                  onMouseMove={handleCanvasMouseMove}
+                  onMouseUp={handleCanvasMouseUp}
+                  onMouseLeave={handleCanvasMouseUp}
+                  onClick={handleCanvasClick}
                 >
                   {/* Grid */}
                   <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-10">
@@ -173,7 +257,12 @@ const HomeRouteMapping = () => {
                   {rooms.map((room) => (
                     <div
                       key={room.id}
-                      className="absolute border-2 border-dashed rounded-lg flex items-start justify-start p-2 transition-all"
+                      onMouseDown={(e) => handleRoomMouseDown(e, room.id)}
+                      className={`absolute border-2 border-dashed rounded-lg flex items-start justify-start p-2 ${
+                        activeTool === "select"
+                          ? "cursor-grab active:cursor-grabbing hover:shadow-lg hover:shadow-primary/10"
+                          : ""
+                      } ${dragging?.roomId === room.id ? "opacity-80 ring-2 ring-primary" : ""}`}
                       style={{
                         left: room.x,
                         top: room.y,
@@ -181,9 +270,10 @@ const HomeRouteMapping = () => {
                         height: room.height,
                         backgroundColor: room.color,
                         borderColor: room.color.replace("0.15", "0.5"),
+                        transition: dragging?.roomId === room.id ? "none" : "box-shadow 0.2s",
                       }}
                     >
-                      <span className="text-[10px] font-heading font-semibold text-foreground/70 bg-background/50 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-heading font-semibold text-foreground/70 bg-background/50 px-1.5 py-0.5 rounded pointer-events-none">
                         {room.name}
                       </span>
 
@@ -191,7 +281,7 @@ const HomeRouteMapping = () => {
                       {room.shelves.map((shelf) => (
                         <div
                           key={shelf.id}
-                          className="absolute w-2.5 h-2.5 bg-muted-foreground/40 rounded-sm border border-muted-foreground/20"
+                          className="absolute w-3 h-3 bg-accent/60 rounded-sm border border-accent/30 hover:scale-125 transition-transform"
                           style={{ left: shelf.x - room.x, top: shelf.y - room.y }}
                           title={shelf.label}
                         />
@@ -218,8 +308,11 @@ const HomeRouteMapping = () => {
                   {objects.map((obj) => (
                     <button
                       key={obj.id}
-                      onClick={() => activeTool === "navigate" ? navigateToObject(obj) : setSelectedObject(obj)}
-                      className={`absolute w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all ${
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        activeTool === "navigate" ? navigateToObject(obj) : setSelectedObject(obj);
+                      }}
+                      className={`absolute w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center transition-all z-10 ${
                         selectedObject?.id === obj.id
                           ? "bg-primary scale-125 shadow-lg shadow-primary/40"
                           : "bg-accent hover:scale-110"
@@ -242,7 +335,6 @@ const HomeRouteMapping = () => {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {/* Object List for Navigation */}
             <AnimatedSection delay={200}>
               <Card className="glass border-border">
                 <CardHeader className="pb-3">
@@ -275,7 +367,6 @@ const HomeRouteMapping = () => {
               </Card>
             </AnimatedSection>
 
-            {/* Room List */}
             <AnimatedSection delay={300}>
               <Card className="glass border-border">
                 <CardHeader className="pb-3">
@@ -297,7 +388,7 @@ const HomeRouteMapping = () => {
                     variant="outline"
                     size="sm"
                     className="w-full gap-2 mt-2"
-                    onClick={() => toast.info("Draw a room on the floor plan")}
+                    onClick={addNewRoom}
                   >
                     <Plus className="w-4 h-4" /> Add Room
                   </Button>
