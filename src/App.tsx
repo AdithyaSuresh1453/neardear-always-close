@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import PhoneRecovery from "./pages/PhoneRecovery";
 import AdminPanel from "./pages/AdminPanel";
 import HomeRouteMapping from "./pages/HomeRouteMapping";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/phone-recovery" element={<PhoneRecovery />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/home-map" element={<HomeRouteMapping />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

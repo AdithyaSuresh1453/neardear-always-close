@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Key, Wallet, CreditCard, Smartphone, Plus, MapPin,
   Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle,
-  Navigation, Shield, Phone
+  Navigation, Shield, Phone, Settings
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import VoiceButton from "@/components/VoiceButton";
@@ -58,6 +58,9 @@ const Dashboard = () => {
           <Logo size="sm" />
           <div className="flex items-center gap-3">
             <VoiceButton onResult={(t) => toast.info(`Voice: "${t}"`)} />
+            <Link to="/settings" className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
+              <Settings className="w-5 h-5" />
+            </Link>
             <Link to="/" className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
               <LogOut className="w-5 h-5" />
             </Link>
