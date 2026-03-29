@@ -6,6 +6,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import PhoneRecovery from "./pages/PhoneRecovery";
+import AdminPanel from "./pages/AdminPanel";
+import HomeRouteMapping from "./pages/HomeRouteMapping";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
