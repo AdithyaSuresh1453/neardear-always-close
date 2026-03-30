@@ -5,6 +5,7 @@ import Logo from "@/components/Logo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [params] = useSearchParams();
@@ -12,15 +13,37 @@ const Auth = () => {
   const [isSignup, setIsSignup] = useState(params.get("mode") === "signup");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      if (isSignup) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: fullName },
+            emailRedirectTo: window.location.origin,
+          },
+        });
+        if (error) throw error;
+        toast.success("Account created! Check your email to confirm.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success("Welcome back!");
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Authentication failed");
+    } finally {
       setLoading(false);
-      toast.success(isSignup ? "Account created! Welcome to NearDear." : "Welcome back!");
-      navigate("/dashboard");
-    }, 1200);
+    }
   };
 
   return (
@@ -46,7 +69,13 @@ const Auth = () => {
               <label className="text-sm font-medium text-foreground">Full Name</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="John Doe" className="pl-10 bg-secondary border-border" required />
+                <Input
+                  placeholder="John Doe"
+                  className="pl-10 bg-secondary border-border"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
               </div>
             </div>
           )}
@@ -55,7 +84,14 @@ const Auth = () => {
             <label className="text-sm font-medium text-foreground">Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input type="email" placeholder="you@email.com" className="pl-10 bg-secondary border-border" required />
+              <Input
+                type="email"
+                placeholder="you@email.com"
+                className="pl-10 bg-secondary border-border"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
           </div>
 
@@ -68,6 +104,8 @@ const Auth = () => {
                 placeholder="••••••••"
                 className="pl-10 pr-10 bg-secondary border-border"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
