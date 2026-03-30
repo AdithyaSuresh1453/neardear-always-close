@@ -187,6 +187,11 @@ const Dashboard = () => {
               </div>
             </AnimatedSection>
 
+            {/* Medicine Widget */}
+            <AnimatedSection delay={620}>
+              <MedicineReminderWidget />
+            </AnimatedSection>
+
             {/* Quick Nav */}
             <AnimatedSection delay={650}>
               <div className="grid grid-cols-5 gap-3">
