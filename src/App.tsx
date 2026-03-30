@@ -10,6 +10,8 @@ import PhoneRecovery from "./pages/PhoneRecovery";
 import AdminPanel from "./pages/AdminPanel";
 import HomeRouteMapping from "./pages/HomeRouteMapping";
 import Settings from "./pages/Settings";
+import MedicineReminder from "./pages/MedicineReminder";
+import Geofencing from "./pages/Geofencing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/home-map" element={<HomeRouteMapping />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/medicine" element={<MedicineReminder />} />
+          <Route path="/geofencing" element={<Geofencing />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
