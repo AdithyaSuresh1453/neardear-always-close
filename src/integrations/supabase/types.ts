@@ -14,6 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
+      geofence_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          id: string
+          missing_items: string[]
+          user_id: string
+          zone_id: string
+        }
+        Insert: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          missing_items?: string[]
+          user_id: string
+          zone_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          missing_items?: string[]
+          user_id?: string
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geofence_alerts_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "geofence_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      geofence_zones: {
+        Row: {
+          created_at: string
+          essential_items: string[]
+          id: string
+          is_active: boolean
+          latitude: number
+          longitude: number
+          name: string
+          radius_meters: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          essential_items?: string[]
+          id?: string
+          is_active?: boolean
+          latitude: number
+          longitude: number
+          name: string
+          radius_meters?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          essential_items?: string[]
+          id?: string
+          is_active?: boolean
+          latitude?: number
+          longitude?: number
+          name?: string
+          radius_meters?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medicine_reminders: {
+        Row: {
+          alarm_sound: string
+          alarm_time: string
+          created_at: string
+          days_of_week: number[]
+          dosage: string | null
+          id: string
+          is_active: boolean
+          medicine_name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          usual_location: string | null
+        }
+        Insert: {
+          alarm_sound?: string
+          alarm_time: string
+          created_at?: string
+          days_of_week?: number[]
+          dosage?: string | null
+          id?: string
+          is_active?: boolean
+          medicine_name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          usual_location?: string | null
+        }
+        Update: {
+          alarm_sound?: string
+          alarm_time?: string
+          created_at?: string
+          days_of_week?: number[]
+          dosage?: string | null
+          id?: string
+          is_active?: boolean
+          medicine_name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          usual_location?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
