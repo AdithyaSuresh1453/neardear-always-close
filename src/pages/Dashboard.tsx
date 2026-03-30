@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import {
   Key, Wallet, CreditCard, Smartphone, Plus, MapPin,
   Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle,
-  Navigation, Shield, Phone, Settings
+  Navigation, Shield, Phone, Settings, Pill, Target
 } from "lucide-react";
+import MedicineReminderWidget from "@/components/MedicineReminderWidget";
 import Logo from "@/components/Logo";
 import VoiceButton from "@/components/VoiceButton";
 import AnimatedSection from "@/components/AnimatedSection";
