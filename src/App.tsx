@@ -30,6 +30,8 @@ const App = () => (
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/home-map" element={<HomeRouteMapping />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/medicine" element={<MedicineReminder />} />
+          <Route path="/geofencing" element={<Geofencing />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
