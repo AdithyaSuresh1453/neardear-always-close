@@ -10,6 +10,8 @@ import PhoneRecovery from "./pages/PhoneRecovery";
 import AdminPanel from "./pages/AdminPanel";
 import HomeRouteMapping from "./pages/HomeRouteMapping";
 import Settings from "./pages/Settings";
+import MedicineReminder from "./pages/MedicineReminder";
+import Geofencing from "./pages/Geofencing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
