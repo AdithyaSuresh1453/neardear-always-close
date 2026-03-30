@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import {
   ArrowLeft, Users, Activity, BarChart3, Shield, Search,
   Eye, Ban, CheckCircle, Clock, Smartphone, MapPin
