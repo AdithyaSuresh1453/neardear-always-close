@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import {
   ArrowLeft, Users, Activity, BarChart3, Shield, Search,
   Eye, Ban, CheckCircle, Clock, Smartphone, MapPin
@@ -74,6 +75,36 @@ const AdminPanel = () => {
     { key: "logs" as const, label: "System Logs", icon: Activity },
     { key: "analytics" as const, label: "Analytics", icon: BarChart3 },
   ];
+
+  const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: adminLoading } = useIsAdmin();
+
+  if (authLoading || adminLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-muted-foreground">Checking permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/auth" replace />;
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4 glass rounded-2xl p-8 max-w-sm">
+          <Shield className="w-12 h-12 text-destructive mx-auto" />
+          <h2 className="font-heading text-xl font-bold">Access Denied</h2>
+          <p className="text-sm text-muted-foreground">You need admin privileges to access this panel.</p>
+          <Link to="/dashboard">
+            <Button variant="outline">Back to Dashboard</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
