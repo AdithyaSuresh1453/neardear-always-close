@@ -178,10 +178,15 @@ const Dashboard = () => {
                         </div>
                         <p className="text-xs text-muted-foreground truncate">{obj.location}</p>
                       </div>
-                      <div className="text-right shrink-0">
+                      <div className="flex items-center gap-2 shrink-0">
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="w-3 h-3" /> {obj.lastSeen}
                         </div>
+                        {obj.fromDb && (
+                          <button onClick={(e) => { e.stopPropagation(); deleteObject(obj.id); }} className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                       <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
