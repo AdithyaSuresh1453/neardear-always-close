@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Camera, ScanSearch, ArrowLeft, Loader2, Zap, Eye, RefreshCw } from "lucide-react";
+import { Camera, ScanSearch, ArrowLeft, Loader2, Zap, Eye, RefreshCw, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import AnimatedSection from "@/components/AnimatedSection";
 import Logo from "@/components/Logo";
