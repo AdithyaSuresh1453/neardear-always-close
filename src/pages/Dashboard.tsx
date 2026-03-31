@@ -194,7 +194,11 @@ const Dashboard = () => {
 
             {/* Quick Nav */}
             <AnimatedSection delay={650}>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 gap-3">
+                <Link to="/camera" className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-colors group">
+                  <ScanSearch className="w-5 h-5 text-accent mx-auto mb-2" />
+                  <p className="text-xs font-medium">Detect</p>
+                </Link>
                 <Link to="/phone-recovery" className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-colors group">
                   <Phone className="w-5 h-5 text-primary mx-auto mb-2" />
                   <p className="text-xs font-medium">Phone</p>
