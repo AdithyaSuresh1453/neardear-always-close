@@ -47,8 +47,43 @@ const statusColors = {
 };
 
 const Dashboard = () => {
-  const [objects] = useState(initialObjects);
+  const { user } = useAuth();
+  const [dbObjects, setDbObjects] = useState<TrackedObject[]>([]);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("detected_objects")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (data) {
+        const mapped: TrackedObject[] = data.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          type: d.name.toLowerCase(),
+          location: d.location || "Detected via camera",
+          room: "",
+          lastSeen: new Date(d.last_seen_at).toLocaleString(),
+          status: (d.status as "safe" | "warning" | "lost") || "safe",
+          fromDb: true,
+        }));
+        setDbObjects(mapped);
+      }
+    };
+    load();
+  }, [user]);
+
+  const objects = [...dbObjects, ...staticObjects];
+
+  const deleteObject = async (id: string) => {
+    const { error } = await supabase.from("detected_objects").delete().eq("id", id);
+    if (error) { toast.error("Failed to delete"); return; }
+    setDbObjects((prev) => prev.filter((o) => o.id !== id));
+    toast.success("Object removed");
+  };
 
   const filtered = objects.filter((o) =>
     o.name.toLowerCase().includes(search.toLowerCase())
