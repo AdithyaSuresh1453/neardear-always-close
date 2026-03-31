@@ -22,14 +22,38 @@ const sizeColors: Record<string, string> = {
 };
 
 const CameraDetection = () => {
+  const { user } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [streaming, setStreaming] = useState(false);
   const [detecting, setDetecting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [objects, setObjects] = useState<DetectedObject[]>([]);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [autoDetect, setAutoDetect] = useState(false);
   const autoDetectRef = useRef(false);
+
+  const saveObjects = useCallback(async () => {
+    if (!user || objects.length === 0) return;
+    setSaving(true);
+    try {
+      const rows = objects.map((obj) => ({
+        user_id: user.id,
+        name: obj.name,
+        confidence: obj.confidence,
+        size: obj.size,
+        location: obj.location,
+        status: "safe",
+      }));
+      const { error } = await supabase.from("detected_objects").insert(rows);
+      if (error) throw error;
+      toast.success(`Saved ${objects.length} object(s) to your tracked items!`);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to save objects");
+    } finally {
+      setSaving(false);
+    }
+  }, [user, objects]);
 
   const startCamera = useCallback(async () => {
     try {
