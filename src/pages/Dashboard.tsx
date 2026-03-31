@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Key, Wallet, CreditCard, Smartphone, Plus, MapPin,
   Bell, Clock, Mic, Search, LogOut, ChevronRight, AlertTriangle,
-  Navigation, Shield, Phone, Settings, Pill, Target, ScanSearch
+  Navigation, Shield, Phone, Settings, Pill, Target, ScanSearch, Trash2
 } from "lucide-react";
 import MedicineReminderWidget from "@/components/MedicineReminderWidget";
 import Logo from "@/components/Logo";
@@ -11,6 +11,8 @@ import VoiceButton from "@/components/VoiceButton";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const iconMap: Record<string, typeof Key> = { keys: Key, wallet: Wallet, "id card": CreditCard, phone: Smartphone };
 
@@ -22,9 +24,10 @@ interface TrackedObject {
   room: string;
   lastSeen: string;
   status: "safe" | "warning" | "lost";
+  fromDb?: boolean;
 }
 
-const initialObjects: TrackedObject[] = [
+const staticObjects: TrackedObject[] = [
   { id: "1", name: "House Keys", type: "keys", location: "Living Room - Shelf 2", room: "Room 1", lastSeen: "2 min ago", status: "safe" },
   { id: "2", name: "Leather Wallet", type: "wallet", location: "Bedroom - Nightstand", room: "Room 3", lastSeen: "15 min ago", status: "safe" },
   { id: "3", name: "National ID", type: "id card", location: "Office - Drawer 1", room: "Room 2", lastSeen: "1 hr ago", status: "warning" },
@@ -44,8 +47,43 @@ const statusColors = {
 };
 
 const Dashboard = () => {
-  const [objects] = useState(initialObjects);
+  const { user } = useAuth();
+  const [dbObjects, setDbObjects] = useState<TrackedObject[]>([]);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("detected_objects")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (data) {
+        const mapped: TrackedObject[] = data.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          type: d.name.toLowerCase(),
+          location: d.location || "Detected via camera",
+          room: "",
+          lastSeen: new Date(d.last_seen_at).toLocaleString(),
+          status: (d.status as "safe" | "warning" | "lost") || "safe",
+          fromDb: true,
+        }));
+        setDbObjects(mapped);
+      }
+    };
+    load();
+  }, [user]);
+
+  const objects = [...dbObjects, ...staticObjects];
+
+  const deleteObject = async (id: string) => {
+    const { error } = await supabase.from("detected_objects").delete().eq("id", id);
+    if (error) { toast.error("Failed to delete"); return; }
+    setDbObjects((prev) => prev.filter((o) => o.id !== id));
+    toast.success("Object removed");
+  };
 
   const filtered = objects.filter((o) =>
     o.name.toLowerCase().includes(search.toLowerCase())
@@ -140,10 +178,15 @@ const Dashboard = () => {
                         </div>
                         <p className="text-xs text-muted-foreground truncate">{obj.location}</p>
                       </div>
-                      <div className="text-right shrink-0">
+                      <div className="flex items-center gap-2 shrink-0">
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="w-3 h-3" /> {obj.lastSeen}
                         </div>
+                        {obj.fromDb && (
+                          <button onClick={(e) => { e.stopPropagation(); deleteObject(obj.id); }} className="p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                       <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>

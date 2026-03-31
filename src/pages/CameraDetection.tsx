@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Camera, ScanSearch, ArrowLeft, Loader2, Zap, Eye, RefreshCw } from "lucide-react";
+import { Camera, ScanSearch, ArrowLeft, Loader2, Zap, Eye, RefreshCw, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import AnimatedSection from "@/components/AnimatedSection";
 import Logo from "@/components/Logo";
@@ -21,14 +22,38 @@ const sizeColors: Record<string, string> = {
 };
 
 const CameraDetection = () => {
+  const { user } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [streaming, setStreaming] = useState(false);
   const [detecting, setDetecting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [objects, setObjects] = useState<DetectedObject[]>([]);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [autoDetect, setAutoDetect] = useState(false);
   const autoDetectRef = useRef(false);
+
+  const saveObjects = useCallback(async () => {
+    if (!user || objects.length === 0) return;
+    setSaving(true);
+    try {
+      const rows = objects.map((obj) => ({
+        user_id: user.id,
+        name: obj.name,
+        confidence: obj.confidence,
+        size: obj.size,
+        location: obj.location,
+        status: "safe",
+      }));
+      const { error } = await supabase.from("detected_objects").insert(rows);
+      if (error) throw error;
+      toast.success(`Saved ${objects.length} object(s) to your tracked items!`);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to save objects");
+    } finally {
+      setSaving(false);
+    }
+  }, [user, objects]);
 
   const startCamera = useCallback(async () => {
     try {
@@ -188,6 +213,15 @@ const CameraDetection = () => {
               {capturedImage && !streaming && (
                 <button onClick={startCamera} className="flex items-center gap-2 bg-secondary text-foreground px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-secondary/80 transition-all border border-border">
                   <RefreshCw className="w-4 h-4" /> New Scan
+                </button>
+              )}
+              {objects.length > 0 && user && (
+                <button
+                  onClick={saveObjects}
+                  disabled={saving}
+                  className="flex items-center gap-2 bg-success/20 text-success px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-success/30 transition-all border border-success/30 disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" /> {saving ? "Saving..." : "Save to Dashboard"}
                 </button>
               )}
             </div>

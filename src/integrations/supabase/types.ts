@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      detected_objects: {
+        Row: {
+          confidence: number
+          created_at: string
+          id: string
+          image_url: string | null
+          last_seen_at: string
+          location: string
+          name: string
+          size: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          last_seen_at?: string
+          location?: string
+          name: string
+          size?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          last_seen_at?: string
+          location?: string
+          name?: string
+          size?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       geofence_alerts: {
         Row: {
           alert_type: string
