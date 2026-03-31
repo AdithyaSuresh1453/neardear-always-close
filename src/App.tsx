@@ -33,6 +33,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/medicine" element={<MedicineReminder />} />
           <Route path="/geofencing" element={<Geofencing />} />
+          <Route path="/camera" element={<CameraDetection />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
