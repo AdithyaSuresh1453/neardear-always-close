@@ -215,6 +215,15 @@ const CameraDetection = () => {
                   <RefreshCw className="w-4 h-4" /> New Scan
                 </button>
               )}
+              {objects.length > 0 && user && (
+                <button
+                  onClick={saveObjects}
+                  disabled={saving}
+                  className="flex items-center gap-2 bg-success/20 text-success px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-success/30 transition-all border border-success/30 disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" /> {saving ? "Saving..." : "Save to Dashboard"}
+                </button>
+              )}
             </div>
           </div>
         </AnimatedSection>
