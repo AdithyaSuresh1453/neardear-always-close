@@ -1,21 +1,8 @@
-import { Mic } from "lucide-react";
-import { useState } from "react";
+import { Mic, MicOff } from "lucide-react";
+import { useVoiceCommand } from "@/hooks/useVoiceCommand";
 
-const VoiceButton = ({ onResult }: { onResult?: (text: string) => void }) => {
-  const [listening, setListening] = useState(false);
-
-  const toggle = () => {
-    setListening((l) => {
-      if (!l) {
-        // Simulate voice listening
-        setTimeout(() => {
-          setListening(false);
-          onResult?.("Where are my keys?");
-        }, 2000);
-      }
-      return !l;
-    });
-  };
+const VoiceButton = () => {
+  const { listening, toggle } = useVoiceCommand();
 
   return (
     <button
@@ -30,7 +17,11 @@ const VoiceButton = ({ onResult }: { onResult?: (text: string) => void }) => {
       {listening && (
         <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
       )}
-      <Mic className={`w-6 h-6 ${listening ? "text-primary-foreground" : "text-primary"}`} />
+      {listening ? (
+        <MicOff className="w-6 h-6 text-primary-foreground" />
+      ) : (
+        <Mic className="w-6 h-6 text-primary" />
+      )}
     </button>
   );
 };
