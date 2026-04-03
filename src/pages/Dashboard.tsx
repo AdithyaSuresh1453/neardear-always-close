@@ -96,7 +96,7 @@ const Dashboard = () => {
         <div className="container flex items-center justify-between h-16">
           <Logo size="sm" />
           <div className="flex items-center gap-3">
-            <VoiceButton onResult={(t) => toast.info(`Voice: "${t}"`)} />
+            <VoiceButton />
             <Link to="/settings" className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
               <Settings className="w-5 h-5" />
             </Link>
