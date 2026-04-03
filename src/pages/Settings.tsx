@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, User, Bell, Smartphone, Save, Camera,
-  BellRing, BellOff, Vibrate, Mail, Watch, Headphones,
-  Wifi, Bluetooth, Trash2
+  ArrowLeft, User, Bell, Save, Camera,
+  BellRing, BellOff, Vibrate, Mail
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -13,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import ConnectedDevices from "@/components/settings/ConnectedDevices";
 
 interface NotifPref {
   key: string;
@@ -20,14 +20,6 @@ interface NotifPref {
   description: string;
   icon: typeof Bell;
   enabled: boolean;
-}
-
-interface ConnectedDevice {
-  id: string;
-  name: string;
-  type: "watch" | "earbuds" | "phone";
-  connected: boolean;
-  battery?: number;
 }
 
 const Settings = () => {
@@ -44,30 +36,10 @@ const Settings = () => {
     { key: "silent", label: "Silent Mode", description: "Only vibrate, no sound", icon: BellOff, enabled: false },
   ]);
 
-  const [devices, setDevices] = useState<ConnectedDevice[]>([
-    { id: "d1", name: "Apple Watch Series 9", type: "watch", connected: true, battery: 72 },
-    { id: "d2", name: "AirPods Pro 2", type: "earbuds", connected: true, battery: 85 },
-    { id: "d3", name: "iPhone 15 Pro", type: "phone", connected: false, battery: 15 },
-  ]);
-
-  const deviceIcons = { watch: Watch, earbuds: Headphones, phone: Smartphone };
-
   const toggleNotif = (key: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.key === key ? { ...n, enabled: !n.enabled } : n))
     );
-  };
-
-  const toggleDevice = (id: string) => {
-    setDevices((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, connected: !d.connected } : d))
-    );
-    toast.success("Device connection updated");
-  };
-
-  const removeDevice = (id: string) => {
-    setDevices((prev) => prev.filter((d) => d.id !== id));
-    toast.info("Device removed");
   };
 
   return (
