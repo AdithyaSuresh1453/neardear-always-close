@@ -150,57 +150,7 @@ const Settings = () => {
 
         {/* Connected Devices */}
         <AnimatedSection delay={200}>
-          <Card className="glass border-border">
-            <CardHeader className="pb-3 flex flex-row items-center justify-between">
-              <CardTitle className="font-heading text-lg flex items-center gap-2">
-                <Bluetooth className="w-5 h-5 text-primary" /> Connected Devices
-              </CardTitle>
-              <Button variant="outline" size="sm" className="gap-2" onClick={() => toast.info("Scanning for devices...")}>
-                <Wifi className="w-4 h-4" /> Scan
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {devices.map((d) => {
-                const DeviceIcon = deviceIcons[d.type];
-                return (
-                  <div
-                    key={d.id}
-                    className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/50 transition-colors"
-                  >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      d.connected ? "bg-primary/10" : "bg-secondary"
-                    }`}>
-                      <DeviceIcon className={`w-5 h-5 ${d.connected ? "text-primary" : "text-muted-foreground"}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{d.name}</p>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs ${d.connected ? "text-success" : "text-muted-foreground"}`}>
-                          {d.connected ? "Connected" : "Disconnected"}
-                        </span>
-                        {d.battery !== undefined && (
-                          <span className={`text-xs ${
-                            d.battery > 50 ? "text-success" : d.battery > 20 ? "text-warning" : "text-destructive"
-                          }`}>
-                            {d.battery}%
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Switch checked={d.connected} onCheckedChange={() => toggleDevice(d.id)} />
-                      <Button variant="ghost" size="icon" onClick={() => removeDevice(d.id)}>
-                        <Trash2 className="w-4 h-4 text-muted-foreground" />
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-              {devices.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-6">No devices connected. Tap Scan to find nearby devices.</p>
-              )}
-            </CardContent>
-          </Card>
+          <ConnectedDevices />
         </AnimatedSection>
       </main>
     </div>
