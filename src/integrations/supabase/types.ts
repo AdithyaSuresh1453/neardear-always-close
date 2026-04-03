@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      connected_devices: {
+        Row: {
+          battery_level: number | null
+          created_at: string
+          device_name: string
+          device_type: string
+          id: string
+          is_connected: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          battery_level?: number | null
+          created_at?: string
+          device_name: string
+          device_type?: string
+          id?: string
+          is_connected?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          battery_level?: number | null
+          created_at?: string
+          device_name?: string
+          device_type?: string
+          id?: string
+          is_connected?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       detected_objects: {
         Row: {
           confidence: number
