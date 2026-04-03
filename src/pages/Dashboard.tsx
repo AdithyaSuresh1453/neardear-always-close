@@ -225,7 +225,7 @@ const Dashboard = () => {
                 <p className="text-sm text-muted-foreground">Try saying</p>
                 <p className="font-heading font-semibold text-primary">"Where are my keys?"</p>
                 <div className="flex justify-center">
-                  <VoiceButton onResult={(t) => toast.success(`Found: Living Room - Shelf 2`)} />
+                  <VoiceButton />
                 </div>
               </div>
             </AnimatedSection>
